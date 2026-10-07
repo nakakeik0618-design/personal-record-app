@@ -16,4 +16,4 @@
 
 ## 現在のステータス
 
-要件定義フェーズ。詳細は [docs/requirements/requirements.md](requirements/requirements.md) を参照。未決定事項・要確認事項も同ファイルに記載している。
+要件定義：完了（[要件定義書](requirements/requirements.md) v1.0）。次は基本設計（画面遷移図・ER図）。
