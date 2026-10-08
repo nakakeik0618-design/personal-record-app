@@ -9,6 +9,7 @@
 ## ドキュメント
 
 - 要件定義書: `docs/requirements/requirements.md`（要件ID: FR-xxx / NFR-xxxで管理）
+- 基本設計書: `docs/basic-design/`（画面遷移図 `screen-transition.md`（画面ID: SC-xx）、ER図 `er-diagram.md`）
 - プロジェクト概要: `docs/README.md`
 
 ## 技術スタック（確定）
@@ -21,11 +22,11 @@
 | ビルドツール | Maven |
 | バージョン管理 | GitHub |
 
-画面設計・API設計・DBテーブル設計などはまだ未着手（基本設計以降で決定）。
+画面遷移・ER図は基本設計書で確定済み。画面レイアウト・API設計・DBの物理設計（型・桁数・インデックス等）は未着手。
 
 ## 現在のフェーズ
 
-要件定義：完了。次は基本設計（画面遷移図・ER図）。
+要件定義：完了。基本設計：画面遷移図・ER図が完了。次は画面レイアウト（基本設計の残り）。
 
 ## Gitワークフロー
 
