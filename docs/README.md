@@ -17,7 +17,8 @@
 ## 現在のステータス
 
 - 要件定義：完了（[要件定義書](requirements/requirements.md) v1.0）
-- 基本設計：作成中
+- 基本設計：完了
   - 画面遷移図：完了（[screen-transition.md](basic-design/screen-transition.md)）
   - ER図：完了（[er-diagram.md](basic-design/er-diagram.md)）
-  - 画面レイアウト：未着手（次の作業）
+  - 画面レイアウト：完了（[screen-layout.md](basic-design/screen-layout.md)）
+- 詳細設計（API設計）：未着手（次の作業）
