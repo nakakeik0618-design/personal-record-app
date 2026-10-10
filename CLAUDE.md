@@ -10,7 +10,7 @@
 
 - 要件定義書: `docs/requirements/requirements.md`（要件ID: FR-xxx / NFR-xxxで管理）
 - 基本設計書: `docs/basic-design/`（画面遷移図 `screen-transition.md`（画面ID: SC-xx）、ER図 `er-diagram.md`、画面レイアウト `screen-layout.md`）
-- 詳細設計書: `docs/detailed-design/`（API設計 `api-design.md`（API ID: API-xx））
+- 詳細設計書: `docs/detailed-design/`（API設計 `api-design.md`（API ID: API-xx）、DB設計 `db-design.md`）
 - プロジェクト概要: `docs/README.md`
 
 ## 技術スタック（確定）
@@ -23,11 +23,11 @@
 | ビルドツール | Maven |
 | バージョン管理 | GitHub |
 
-画面遷移・ER図・画面レイアウトは基本設計書、API設計（認証はセッション方式＋CSRF対策）は詳細設計書で確定済み。DBの物理設計（型・桁数・インデックス等）は未着手。
+画面遷移・ER図・画面レイアウトは基本設計書、API設計（認証はセッション方式＋CSRF対策）、DBの物理設計（型・制約・インデックス、utf8mb4_bin）は詳細設計書で確定済み。
 
 ## 現在のフェーズ
 
-要件定義：完了。基本設計：完了（画面遷移図・ER図・画面レイアウト）。詳細設計：完了（API設計）。次はDB設計。
+要件定義：完了。基本設計：完了（画面遷移図・ER図・画面レイアウト）。詳細設計：完了（API設計）。DB設計：完了。次は環境構築。
 
 ## Gitワークフロー
 

@@ -23,4 +23,5 @@
   - 画面レイアウト：完了（[screen-layout.md](basic-design/screen-layout.md)）
 - 詳細設計：完了
   - API設計：完了（[api-design.md](detailed-design/api-design.md)）
-- DB設計：未着手（次の作業）
+- DB設計：完了（[db-design.md](detailed-design/db-design.md)）
+- 環境構築：未着手（次の作業）
