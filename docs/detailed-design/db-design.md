@@ -217,4 +217,4 @@ CREATE TABLE daily_review_details (
 | 4 | 作成日時・更新日時の設定方法 | アプリケーション側で設定する |
 | 5 | 日時のタイムゾーン | 日本時間（Asia/Tokyo） |
 | 6 | パスワードのハッシュ化方式 | BCrypt（Spring Security の標準的な方式） |
-| 7 | DDLの位置付け | 設計確認用とし、実際の作成方法は環境構築で決める |
+| 7 | DDLの位置付け | 設計確認用とし、実際の作成方法は環境構築で決める（環境構築で Flyway に決定。`backend/src/main/resources/db/migration/V1__create_tables.sql`） |
