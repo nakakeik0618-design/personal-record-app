@@ -1,2 +1,5 @@
 # macOS
 .DS_Store
+
+# 環境変数（パスワード等を含むためGit管理外）
+.env
