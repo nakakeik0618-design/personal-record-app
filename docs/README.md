@@ -21,4 +21,6 @@
   - 画面遷移図：完了（[screen-transition.md](basic-design/screen-transition.md)）
   - ER図：完了（[er-diagram.md](basic-design/er-diagram.md)）
   - 画面レイアウト：完了（[screen-layout.md](basic-design/screen-layout.md)）
-- 詳細設計（API設計）：未着手（次の作業）
+- 詳細設計：完了
+  - API設計：完了（[api-design.md](detailed-design/api-design.md)）
+- DB設計：未着手（次の作業）
