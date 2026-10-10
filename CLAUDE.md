@@ -17,17 +17,24 @@
 
 | 領域 | 技術 |
 |---|---|
-| バックエンド | Java, Spring Boot, Spring Security, Spring Data JPA |
+| バックエンド | Java 25, Spring Boot 4.1.1, Spring Security, Spring Data JPA, Validation, Flyway（Lombokは使わない） |
 | DB | MySQL 8.4（Docker で起動、ポート 3307） |
 | フロントエンド | HTML, CSS, JavaScript, React |
-| ビルドツール | Maven |
+| ビルドツール | Maven（Maven Wrapper `./mvnw`） |
 | バージョン管理 | GitHub |
 
 画面遷移・ER図・画面レイアウトは基本設計書、API設計（認証はセッション方式＋CSRF対策）、DBの物理設計（型・制約・インデックス、utf8mb4_bin）は詳細設計書で確定済み。
 
+## フォルダ構成
+
+- `backend/`：Spring Boot（パッケージ `com.mindlog`）。テーブル定義は Flyway（`src/main/resources/db/migration`）で管理する
+- `frontend/`：React（未作成）
+- `docs/`：設計書
+- `compose.yaml` / `.env.example`：開発用 MySQL（実際の接続情報は Git 管理外の `.env`）
+
 ## 現在のフェーズ
 
-要件定義：完了。基本設計：完了（画面遷移図・ER図・画面レイアウト）。詳細設計：完了（API設計）。DB設計：完了。次は環境構築。
+要件定義：完了。基本設計：完了（画面遷移図・ER図・画面レイアウト）。詳細設計：完了（API設計）。DB設計：完了。環境構築：MySQL（Docker）・Spring Bootプロジェクト作成まで完了。
 
 ## Gitワークフロー
 

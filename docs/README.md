@@ -14,11 +14,23 @@
 要件定義 → 基本設計 → 詳細設計 → DB設計 → 環境構築 → 実装 → テスト → GitHub管理 → レビュー → 改善
 ```
 
+## フォルダ構成
+
+```
+personal-record-app/
+├── backend/        Spring Boot（Maven）
+├── frontend/       React（未作成）
+├── docs/           設計書
+├── compose.yaml    開発用 MySQL
+└── .env.example    接続情報のひな形（.env にコピーして使う）
+```
+
 ## 開発環境
 
 ### 必要なもの
 
 - Docker（Docker Desktop）
+- Java 25
 
 ### DB（MySQL）の起動
 
@@ -34,6 +46,17 @@ docker compose down     # MySQL を停止（データは残る）
 | ポート | 3307 |
 | DB名・ユーザー名・パスワード | `.env` に記載 |
 
+### バックエンド（Spring Boot）
+
+```bash
+cd backend
+./mvnw spring-boot:run   # 起動（先に MySQL を起動しておく）
+./mvnw test              # テスト
+```
+
+- テーブルは起動時に Flyway が自動で作成・更新する（`backend/src/main/resources/db/migration`）。
+- DB接続情報はリポジトリ直下の `.env` から読み込む。
+
 ## 現在のステータス
 
 - 要件定義：完了（[要件定義書](requirements/requirements.md) v1.0）
@@ -46,3 +69,4 @@ docker compose down     # MySQL を停止（データは残る）
 - DB設計：完了（[db-design.md](detailed-design/db-design.md)）
 - 環境構築：作業中
   - MySQL（Docker）：完了
+  - バックエンド（Spring Boot）プロジェクト作成：完了
