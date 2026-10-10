@@ -5,10 +5,11 @@
 | 項目 | 内容 |
 |---|---|
 | 文書名 | MindLog 詳細設計書：API設計 |
-| バージョン | v1.0 |
+| バージョン | v1.1 |
 | 作成日 | 2026-10-10 |
+| 更新日 | 2026-10-10 |
 | ステータス | 確定 |
-| 関連文書 | [要件定義書](../requirements/requirements.md)、[画面遷移図](../basic-design/screen-transition.md)、[ER図](../basic-design/er-diagram.md)、[画面レイアウト](../basic-design/screen-layout.md) |
+| 関連文書 | [要件定義書](../requirements/requirements.md)、[画面遷移図](../basic-design/screen-transition.md)、[ER図](../basic-design/er-diagram.md)、[画面レイアウト](../basic-design/screen-layout.md)、[DB設計書](db-design.md) |
 
 本書は、フロントエンド（React）とバックエンド（Spring Boot）の間でやり取りするAPIを定める。
 
@@ -179,6 +180,7 @@
 | 200 | ログイン成功 | `{ "id": 1, "email": "user@example.com" }` |
 | 401 | ログイン失敗 | `{ "message": "メールアドレスまたはパスワードが正しくありません。", "errors": [] }` |
 
+- メールアドレスは小文字に統一してから照合する（API-01 の登録時も小文字に統一して保存する。[DB設計書](db-design.md) 1.1節）。
 - ログイン失敗時は、メールアドレスが存在しない場合もパスワードが誤っている場合も同じレスポンスを返す（NFR-002）。
 
 ### API-03 ログアウト
@@ -314,9 +316,9 @@
 | キー | 必須 | チェック内容 |
 |---|---|---|
 | mode | ○ | モードの値のいずれかであること |
-| title | - | |
+| title | - | 30文字以内であること（超えた場合は 400、`field`: `title`） |
 | targetDate | ○ | 日付形式であること。画面では初期値として当日を入れる |
-| details | - | mode に対応するキーのみ受け付ける。各項目は任意 |
+| details | - | mode に対応するキーのみ受け付ける。各項目は任意で、5,000文字以内であること（超えた場合は 400、`field`: `details.goal` 等） |
 
 | ステータス | 場面 | 本文 |
 |---|---|---|
