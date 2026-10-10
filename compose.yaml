@@ -1,0 +1,23 @@
+# 開発用 MySQL（docker compose up -d で起動）
+# 接続情報は .env で設定する（.env.example をコピーして作成）
+services:
+  mysql:
+    image: mysql:8.4
+    container_name: mindlog-mysql
+    ports:
+      - "3307:3306" # PC側 3307 → コンテナ内 3306（PCのMySQLと衝突しないため）
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      TZ: Asia/Tokyo
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_bin
+      - --default-time-zone=+09:00
+    volumes:
+      - mysql-data:/var/lib/mysql
+
+volumes:
+  mysql-data:

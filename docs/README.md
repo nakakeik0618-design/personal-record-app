@@ -14,6 +14,26 @@
 要件定義 → 基本設計 → 詳細設計 → DB設計 → 環境構築 → 実装 → テスト → GitHub管理 → レビュー → 改善
 ```
 
+## 開発環境
+
+### 必要なもの
+
+- Docker（Docker Desktop）
+
+### DB（MySQL）の起動
+
+```bash
+cp .env.example .env    # 初回のみ。.env のパスワードは各自で変更する
+docker compose up -d    # MySQL を起動
+docker compose down     # MySQL を停止（データは残る）
+```
+
+| 項目 | 値 |
+|---|---|
+| ホスト | 127.0.0.1 |
+| ポート | 3307 |
+| DB名・ユーザー名・パスワード | `.env` に記載 |
+
 ## 現在のステータス
 
 - 要件定義：完了（[要件定義書](requirements/requirements.md) v1.0）
@@ -24,4 +44,5 @@
 - 詳細設計：完了
   - API設計：完了（[api-design.md](detailed-design/api-design.md)）
 - DB設計：完了（[db-design.md](detailed-design/db-design.md)）
-- 環境構築：未着手（次の作業）
+- 環境構築：作業中
+  - MySQL（Docker）：完了

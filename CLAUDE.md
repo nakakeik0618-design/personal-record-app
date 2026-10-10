@@ -18,7 +18,7 @@
 | 領域 | 技術 |
 |---|---|
 | バックエンド | Java, Spring Boot, Spring Security, Spring Data JPA |
-| DB | MySQL |
+| DB | MySQL 8.4（Docker で起動、ポート 3307） |
 | フロントエンド | HTML, CSS, JavaScript, React |
 | ビルドツール | Maven |
 | バージョン管理 | GitHub |
