@@ -28,13 +28,14 @@
 ## フォルダ構成
 
 - `backend/`：Spring Boot（パッケージ `com.mindlog`）。テーブル定義は Flyway（`src/main/resources/db/migration`）で管理する
-- `frontend/`：React（未作成）
+- `frontend/`：React 19 + TypeScript（Vite 8、lint は oxlint）。開発時は `/api` を http://localhost:8080 へプロキシ
+- `.nvmrc`：Node.js 24（nvm で管理）
 - `docs/`：設計書
 - `compose.yaml` / `.env.example`：開発用 MySQL（実際の接続情報は Git 管理外の `.env`）
 
 ## 現在のフェーズ
 
-要件定義：完了。基本設計：完了（画面遷移図・ER図・画面レイアウト）。詳細設計：完了（API設計）。DB設計：完了。環境構築：MySQL（Docker）・Spring Bootプロジェクト作成まで完了。
+要件定義：完了。基本設計：完了（画面遷移図・ER図・画面レイアウト）。詳細設計：完了（API設計）。DB設計：完了。環境構築：完了（MySQL（Docker）・Spring Boot・React + TypeScript）。次は実装。
 
 ## Gitワークフロー
 

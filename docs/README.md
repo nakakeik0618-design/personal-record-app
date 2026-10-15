@@ -19,7 +19,7 @@
 ```
 personal-record-app/
 ├── backend/        Spring Boot（Maven）
-├── frontend/       React（未作成）
+├── frontend/       React（TypeScript、Vite）
 ├── docs/           設計書
 ├── compose.yaml    開発用 MySQL
 └── .env.example    接続情報のひな形（.env にコピーして使う）
@@ -31,6 +31,7 @@ personal-record-app/
 
 - Docker（Docker Desktop）
 - Java 25
+- Node.js 24（`.nvmrc` で指定。nvm を使う場合は `nvm use`）
 
 ### DB（MySQL）の起動
 
@@ -57,6 +58,18 @@ cd backend
 - テーブルは起動時に Flyway が自動で作成・更新する（`backend/src/main/resources/db/migration`）。
 - DB接続情報はリポジトリ直下の `.env` から読み込む。
 
+### フロントエンド（React）
+
+```bash
+cd frontend
+npm install      # 初回のみ（依存パッケージのインストール）
+npm run dev      # 開発サーバーを起動 → http://localhost:5173
+npm run lint     # コードの書き方チェック（oxlint）
+npm run build    # 本番用にビルド（型チェックを含む）
+```
+
+- 開発サーバーは `/api` へのリクエストをバックエンド（http://localhost:8080）へ転送する。画面とAPIを両方使うときはバックエンドも起動しておく。
+
 ## 現在のステータス
 
 - 要件定義：完了（[要件定義書](requirements/requirements.md) v1.0）
@@ -70,3 +83,5 @@ cd backend
 - 環境構築：作業中
   - MySQL（Docker）：完了
   - バックエンド（Spring Boot）プロジェクト作成：完了
+  - フロントエンド（React + TypeScript）プロジェクト作成：完了
+- 実装：未着手（次の作業）
