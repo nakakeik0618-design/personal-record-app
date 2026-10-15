@@ -19,7 +19,7 @@
 |---|---|
 | バックエンド | Java 25, Spring Boot 4.1.1, Spring Security, Spring Data JPA, Validation, Flyway（Lombokは使わない） |
 | DB | MySQL 8.4（Docker で起動、ポート 3307） |
-| フロントエンド | HTML, CSS, JavaScript, React |
+| フロントエンド | HTML, CSS, TypeScript, React |
 | ビルドツール | Maven（Maven Wrapper `./mvnw`） |
 | バージョン管理 | GitHub |
 
@@ -76,4 +76,4 @@
 ## Claude Codeとの協働方針
 
 - DB選定・フレームワーク選定・画面設計など、要件定義や設計上の判断はユーザー自身が行う。Claude Codeは提案・選択肢の提示・設計レビューの相手として振る舞い、明示的な指示なく仕様を勝手に確定させない。
-- React実装フェーズでは、書かれたコードの構文・意図が学べるよう説明を添える（ユーザーはReact未学習）。
+- React実装フェーズでは、書かれたコードの構文・意図が学べるよう説明を添える（ユーザーはReact・TypeScript未学習。型の書き方も説明する）。
