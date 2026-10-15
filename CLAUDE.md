@@ -19,7 +19,7 @@
 |---|---|
 | バックエンド | Java 25, Spring Boot 4.1.1, Spring Security, Spring Data JPA, Validation, Flyway（Lombokは使わない） |
 | DB | MySQL 8.4（Docker で起動、ポート 3307） |
-| フロントエンド | HTML, CSS, JavaScript, React |
+| フロントエンド | HTML, CSS, TypeScript, React |
 | ビルドツール | Maven（Maven Wrapper `./mvnw`） |
 | バージョン管理 | GitHub |
 
@@ -28,13 +28,14 @@
 ## フォルダ構成
 
 - `backend/`：Spring Boot（パッケージ `com.mindlog`）。テーブル定義は Flyway（`src/main/resources/db/migration`）で管理する
-- `frontend/`：React（未作成）
+- `frontend/`：React 19 + TypeScript（Vite 8、lint は oxlint）。開発時は `/api` を http://localhost:8080 へプロキシ
+- `.nvmrc`：Node.js 24（nvm で管理）
 - `docs/`：設計書
 - `compose.yaml` / `.env.example`：開発用 MySQL（実際の接続情報は Git 管理外の `.env`）
 
 ## 現在のフェーズ
 
-要件定義：完了。基本設計：完了（画面遷移図・ER図・画面レイアウト）。詳細設計：完了（API設計）。DB設計：完了。環境構築：MySQL（Docker）・Spring Bootプロジェクト作成まで完了。
+要件定義：完了。基本設計：完了（画面遷移図・ER図・画面レイアウト）。詳細設計：完了（API設計）。DB設計：完了。環境構築：完了（MySQL（Docker）・Spring Boot・React + TypeScript）。次は実装。
 
 ## Gitワークフロー
 
@@ -76,4 +77,4 @@
 ## Claude Codeとの協働方針
 
 - DB選定・フレームワーク選定・画面設計など、要件定義や設計上の判断はユーザー自身が行う。Claude Codeは提案・選択肢の提示・設計レビューの相手として振る舞い、明示的な指示なく仕様を勝手に確定させない。
-- React実装フェーズでは、書かれたコードの構文・意図が学べるよう説明を添える（ユーザーはReact未学習）。
+- React実装フェーズでは、書かれたコードの構文・意図が学べるよう説明を添える（ユーザーはReact・TypeScript未学習。型の書き方も説明する）。
