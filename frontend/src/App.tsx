@@ -4,11 +4,14 @@ import { Layout } from './components/Layout'
 import { RequireAuth } from './components/RequireAuth'
 import { DashboardPage } from './pages/DashboardPage'
 import { LoginPage } from './pages/LoginPage'
+import { ModeSelectPage } from './pages/ModeSelectPage'
+import { RecordCreatePage } from './pages/RecordCreatePage'
+import { RecordDetailPage } from './pages/RecordDetailPage'
 import { RegisterPage } from './pages/RegisterPage'
 
 /**
  * 画面のURLと表示するコンポーネントの対応（API設計書 6節）。
- * 記録関係の画面（/records など）は、記録機能の実装時に追加する。
+ * 記録一覧（/records）と記録編集（/records/:id/edit）は、それぞれの実装時に追加する。
  */
 export default function App() {
   return (
@@ -22,6 +25,9 @@ export default function App() {
           <Route element={<RequireAuth />}>
             <Route element={<Layout />}>
               <Route path="/" element={<DashboardPage />} />
+              <Route path="/records/new" element={<ModeSelectPage />} />
+              <Route path="/records/new/:modeSlug" element={<RecordCreatePage />} />
+              <Route path="/records/:id" element={<RecordDetailPage />} />
             </Route>
           </Route>
 

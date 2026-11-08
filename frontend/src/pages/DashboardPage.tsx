@@ -1,16 +1,18 @@
-import { useAuth } from '../auth/authContext'
+import { Link } from 'react-router'
 
 /**
  * SC-03 ダッシュボード。
- * 「新しく記録する」「最近の記録」などは、記録機能の実装時に追加する。
+ * 「最近の記録」「すべての記録を見る」は、記録一覧の実装時に追加する。
  */
 export function DashboardPage() {
-  const { user } = useAuth()
-
   return (
     <>
       <h1>ダッシュボード</h1>
-      <p>{user?.email} でログインしています。</p>
+      <div className="actions">
+        <Link to="/records/new" className="button">
+          ＋ 新しく記録する
+        </Link>
+      </div>
     </>
   )
 }
