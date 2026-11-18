@@ -62,6 +62,13 @@ public class AuthController {
 	public ResponseEntity<?> login(@RequestBody LoginRequest request, HttpServletRequest httpRequest,
 			HttpServletResponse httpResponse) {
 		Authentication authentication;
+		// 省略しない形：
+		// String email = nullToEmpty(request.email());
+		// String password = nullToEmpty(request.password());
+		// UsernamePasswordAuthenticationToken token = UsernamePasswordAuthenticationToken.unauthenticated(email, password);
+		// try {
+		//     authentication = authenticationManager.authenticate(token);
+		// } catch ...
 		try {
 			authentication = authenticationManager.authenticate(UsernamePasswordAuthenticationToken
 					.unauthenticated(nullToEmpty(request.email()), nullToEmpty(request.password())));
@@ -81,6 +88,10 @@ public class AuthController {
 		securityContextHolderStrategy.setContext(context);
 		securityContextRepository.saveContext(context, httpRequest, httpResponse);
 
+		// 省略しない形：
+		// LoginUser loginUser = (LoginUser) authentication.getPrincipal();
+		// UserResponse body = UserResponse.from(loginUser);
+		// return ResponseEntity.ok(body);
 		return ResponseEntity.ok(UserResponse.from((LoginUser) authentication.getPrincipal()));
 	}
 
@@ -90,6 +101,11 @@ public class AuthController {
 		return UserResponse.from(loginUser);
 	}
 
+	// 省略しない形：
+	// if (value == null) {
+	//     return "";
+	// }
+	// return value;
 	private static String nullToEmpty(String value) {
 		return value == null ? "" : value;
 	}

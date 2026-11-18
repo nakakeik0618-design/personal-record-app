@@ -18,6 +18,14 @@ export class ApiError extends Error {
   }
 
   /** 指定した項目のエラーメッセージ（なければ undefined） */
+  // 省略しない形：
+  // fieldMessage(field: string): string | undefined {
+  //   const found = this.body.errors.find((error) => error.field === field)
+  //   if (found === undefined) {
+  //     return undefined
+  //   }
+  //   return found.message
+  // }
   fieldMessage(field: string): string | undefined {
     return this.body.errors.find((error) => error.field === field)?.message
   }
@@ -27,6 +35,16 @@ const CSRF_COOKIE = 'XSRF-TOKEN'
 const CSRF_HEADER = 'X-XSRF-TOKEN'
 
 /** Cookie から CSRF トークンを読み出す（API設計書 1.3節） */
+// document.cookie は 'XSRF-TOKEN=abc123; JSESSIONID=xyz' のような1本の文字列
+// 省略しない形：
+// function readCsrfToken(): string | undefined {
+//   const cookies = document.cookie.split('; ')  // ['XSRF-TOKEN=abc123', 'JSESSIONID=xyz']
+//   const found = cookies.find((cookie) => cookie.startsWith(CSRF_COOKIE + '='))  // 'XSRF-TOKEN=abc123'
+//   if (found === undefined) {
+//     return undefined
+//   }
+//   return found.split('=')[1]  // 'abc123'
+// }
 function readCsrfToken(): string | undefined {
   return document.cookie
     .split('; ')
@@ -50,7 +68,15 @@ async function ensureCsrfToken(): Promise<string | undefined> {
  * - `<T>` は「返ってくるデータの型」を呼び出す側で指定するための書き方（ジェネリクス）
  * - 本文がないレスポンス（201 / 204）の場合は undefined を返す
  */
+// options の「= {}」：引数を渡さなかったときは空のオブジェクト {} を使う
 export async function apiFetch<T>(path: string, options: { method?: string; body?: unknown } = {}): Promise<T> {
+  // 省略しない形：
+  // let method: string
+  // if (options.method === undefined || options.method === null) {
+  //   method = 'GET'
+  // } else {
+  //   method = options.method
+  // }
   const method = options.method ?? 'GET'
   const headers: Record<string, string> = {}
 
@@ -65,6 +91,18 @@ export async function apiFetch<T>(path: string, options: { method?: string; body
     }
   }
 
+  // 省略しない形：
+  // let requestBody: string | undefined
+  // if (options.body === undefined) {
+  //   requestBody = undefined
+  // } else {
+  //   requestBody = JSON.stringify(options.body)
+  // }
+  // const response = await fetch(path, {
+  //   method: method,
+  //   headers: headers,
+  //   body: requestBody,
+  // })
   const response = await fetch(path, {
     method,
     headers,
@@ -74,6 +112,16 @@ export async function apiFetch<T>(path: string, options: { method?: string; body
   const text = await response.text()
   const data: unknown = text ? JSON.parse(text) : undefined
 
+  // 省略しない形：
+  // if (!response.ok) {
+  //   let body: ErrorResponse
+  //   if (data === undefined) {
+  //     body = { message: 'エラーが発生しました。', errors: [] }
+  //   } else {
+  //     body = data as ErrorResponse
+  //   }
+  //   throw new ApiError(response.status, body)
+  // }
   if (!response.ok) {
     const body = (data as ErrorResponse | undefined) ?? { message: 'エラーが発生しました。', errors: [] }
     throw new ApiError(response.status, body)
