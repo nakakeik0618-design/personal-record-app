@@ -225,3 +225,93 @@ a {
   white-space: pre-wrap;
   overflow-wrap: anywhere;
 }
+
+select {
+  font: inherit;
+  padding: 0.5rem;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  background: #fff;
+}
+
+button.secondary {
+  background: #fff;
+  color: var(--color-primary);
+}
+
+/* ダッシュボード・記録一覧 */
+.section-heading {
+  margin-top: 2rem;
+  font-size: 1.15rem;
+}
+
+.empty {
+  color: var(--color-muted);
+}
+
+.more-link {
+  text-align: right;
+}
+
+/* 列が多いので、画面が狭いときは表だけ横にスクロールさせる */
+.table-wrapper {
+  overflow-x: auto;
+}
+
+.record-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+}
+
+.record-table th,
+.record-table td {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--color-border);
+  text-align: left;
+  white-space: nowrap;
+}
+
+.record-table th {
+  background: #eef0f3;
+  font-weight: normal;
+  color: var(--color-muted);
+}
+
+.record-table tbody tr:hover {
+  background: #f3f6fd;
+}
+
+.search-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background: #fff;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+}
+
+.search-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.search-dates {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 0.5rem;
+}
+
+.search-dates-separator {
+  padding-bottom: 0.5rem;
+}
+
+.search-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+}

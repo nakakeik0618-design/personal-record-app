@@ -23,6 +23,7 @@ public class GlobalExceptionHandler {
 
 	private static final String INVALID_INPUT = "入力内容に誤りがあります。";
 	private static final String RECORD_NOT_FOUND = "記録が見つかりません。";
+	private static final String INVALID_SEARCH_CONDITION = "検索条件に誤りがあります。";
 
 	/** @Valid による入力チェックのエラー（400） */
 	@ExceptionHandler(MethodArgumentNotValidException.class)
@@ -63,9 +64,22 @@ public class GlobalExceptionHandler {
 		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ErrorResponse.of(RECORD_NOT_FOUND));
 	}
 
-	/** URL の記録IDが数値でない場合も、存在しない記録として扱う（404） */
+	/** 記録一覧の検索条件が正しくない（400） */
+	@ExceptionHandler(SearchConditionException.class)
+	public ResponseEntity<ErrorResponse> handleSearchCondition(SearchConditionException e) {
+		return ResponseEntity.badRequest().body(ErrorResponse.of(e.getMessage()));
+	}
+
+	/**
+	 * URL の値の型が正しくない場合。
+	 * 記録ID（/api/records/abc）は存在しない記録として扱い（404）、
+	 * 検索条件（?mode=UNKNOWN、?from=2026-13-01 など）は入力の誤りとして扱う（400）。
+	 */
 	@ExceptionHandler(MethodArgumentTypeMismatchException.class)
 	public ResponseEntity<ErrorResponse> handleTypeMismatch(MethodArgumentTypeMismatchException e) {
-		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ErrorResponse.of(RECORD_NOT_FOUND));
+		if ("id".equals(e.getName())) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ErrorResponse.of(RECORD_NOT_FOUND));
+		}
+		return ResponseEntity.badRequest().body(ErrorResponse.of(INVALID_SEARCH_CONDITION));
 	}
 }
