@@ -25,7 +25,7 @@ import com.mindlog.repository.UserRepository;
 import com.mindlog.security.LoginUser;
 
 /**
- * 記録API（API-07, API-08）のテスト。
+ * 記録API（API-05〜API-08）のテスト。
  * 各テストはトランザクション内で実行し、終了時にロールバックするため DB にデータは残らない。
  */
 @SpringBootTest
@@ -172,6 +172,139 @@ class RecordControllerTest {
 				.andExpect(status().isNotFound());
 		mockMvc.perform(get("/api/records/abc").with(user(owner)))
 				.andExpect(status().isNotFound());
+	}
+
+	// ---- API-05 最近の記録取得 ----
+
+	@Test
+	void 最近の記録は新しい順に5件まで_detailsは含まない() throws Exception {
+		for (int i = 1; i <= 6; i++) {
+			create(owner, diaryJson("記録" + i, "本文"));
+		}
+		create(other, diaryJson("他人の記録", "本文"));
+
+		mockMvc.perform(get("/api/records/recent").with(user(owner)))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.length()").value(5))
+				.andExpect(jsonPath("$[0].title").value("記録6"))
+				.andExpect(jsonPath("$[4].title").value("記録2"))
+				.andExpect(jsonPath("$[0].createdAt").value(matchesPattern(DATE_TIME)))
+				.andExpect(jsonPath("$[0].details").doesNotExist());
+	}
+
+	@Test
+	void 記録が0件なら空配列を返す() throws Exception {
+		mockMvc.perform(get("/api/records/recent").with(user(owner)))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.length()").value(0));
+		mockMvc.perform(get("/api/records").with(user(owner)))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.length()").value(0));
+	}
+
+	// ---- API-06 記録一覧・検索 ----
+
+	@Test
+	void 条件なしなら自分の記録をすべて返す() throws Exception {
+		createRecord(owner, "DIARY", "日記1", "2026-10-01");
+		createRecord(owner, "PROBLEM_SOLVING", "問題1", "2026-10-02");
+		createRecord(other, "DIARY", "他人の記録", "2026-10-01");
+
+		mockMvc.perform(get("/api/records").with(user(owner)))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.length()").value(2))
+				.andExpect(jsonPath("$[0].title").value("問題1"))
+				.andExpect(jsonPath("$[1].title").value("日記1"));
+	}
+
+	@Test
+	void モード_対象日_タイトルをANDで検索できる() throws Exception {
+		createRecord(owner, "DIARY", "仕事の日記", "2026-10-10");
+		createRecord(owner, "DIARY", "仕事の日記（範囲外）", "2026-11-01");
+		createRecord(owner, "DIARY", "休日の日記", "2026-10-10");
+		createRecord(owner, "PROBLEM_SOLVING", "仕事の問題", "2026-10-10");
+
+		mockMvc.perform(get("/api/records").with(user(owner))
+				.param("mode", "DIARY")
+				.param("from", "2026-10-01")
+				.param("to", "2026-10-31")
+				.param("title", "仕事"))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.length()").value(1))
+				.andExpect(jsonPath("$[0].title").value("仕事の日記"));
+	}
+
+	@Test
+	void 開始日と終了日が同じ日でも検索できる() throws Exception {
+		createRecord(owner, "DIARY", "当日", "2026-10-10");
+		createRecord(owner, "DIARY", "前日", "2026-10-09");
+
+		mockMvc.perform(get("/api/records").with(user(owner))
+				.param("from", "2026-10-10")
+				.param("to", "2026-10-10"))
+				.andExpect(jsonPath("$.length()").value(1))
+				.andExpect(jsonPath("$[0].title").value("当日"));
+	}
+
+	@Test
+	void タイトルの記号はそのままの文字として検索する() throws Exception {
+		createRecord(owner, "DIARY", "達成率100%", "2026-10-10");
+		createRecord(owner, "DIARY", "達成率1000", "2026-10-10");
+
+		mockMvc.perform(get("/api/records").with(user(owner)).param("title", "0%"))
+				.andExpect(jsonPath("$.length()").value(1))
+				.andExpect(jsonPath("$[0].title").value("達成率100%"));
+	}
+
+	@Test
+	void 空のタイトルは条件に含めない() throws Exception {
+		createRecord(owner, "DIARY", "", "2026-10-10");
+
+		mockMvc.perform(get("/api/records").with(user(owner)).param("title", ""))
+				.andExpect(jsonPath("$.length()").value(1));
+	}
+
+	@Test
+	void 開始日と終了日の片方だけでは400を返す() throws Exception {
+		mockMvc.perform(get("/api/records").with(user(owner)).param("from", "2026-10-01"))
+				.andExpect(status().isBadRequest());
+		mockMvc.perform(get("/api/records").with(user(owner)).param("to", "2026-10-01"))
+				.andExpect(status().isBadRequest());
+	}
+
+	@Test
+	void 開始日が終了日より後なら400を返す() throws Exception {
+		mockMvc.perform(get("/api/records").with(user(owner))
+				.param("from", "2026-10-31")
+				.param("to", "2026-10-01"))
+				.andExpect(status().isBadRequest())
+				.andExpect(jsonPath("$.message").value("開始日は終了日以前の日付を指定してください。"))
+				.andExpect(jsonPath("$.errors.length()").value(0));
+	}
+
+	@Test
+	void 存在しないモードや日付でない値は400を返す() throws Exception {
+		mockMvc.perform(get("/api/records").with(user(owner)).param("mode", "UNKNOWN"))
+				.andExpect(status().isBadRequest());
+		mockMvc.perform(get("/api/records").with(user(owner))
+				.param("from", "abc")
+				.param("to", "2026-10-01"))
+				.andExpect(status().isBadRequest());
+	}
+
+	@Test
+	void 未ログインでは一覧も最近の記録も取得できない() throws Exception {
+		mockMvc.perform(get("/api/records"))
+				.andExpect(status().isUnauthorized());
+		mockMvc.perform(get("/api/records/recent"))
+				.andExpect(status().isUnauthorized());
+	}
+
+	private void createRecord(LoginUser loginUser, String mode, String title, String targetDate) throws Exception {
+		create(loginUser, """
+				{"mode": "%s", "title": "%s", "targetDate": "%s"}
+				""".formatted(mode, title, targetDate))
+				.andExpect(status().isCreated());
 	}
 
 	private LoginUser saveUser(String email) {
