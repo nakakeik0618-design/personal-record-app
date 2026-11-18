@@ -315,3 +315,55 @@ button.secondary {
   justify-content: flex-end;
   gap: 1rem;
 }
+
+/* 記録詳細画面：タイトルと編集・削除ボタン */
+.detail-heading {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.detail-heading h1 {
+  overflow-wrap: anywhere;
+}
+
+.detail-buttons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+button.danger {
+  border-color: var(--color-error);
+  background: var(--color-error);
+}
+
+/* 削除確認ダイアログ：画面全体を暗くして、中央に表示する */
+.dialog-backdrop {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem;
+  background: rgb(0 0 0 / 40%);
+}
+
+.dialog {
+  width: 100%;
+  max-width: 360px;
+  padding: 1.5rem;
+  background: #fff;
+  border-radius: 8px;
+}
+
+.dialog p {
+  margin-top: 0;
+}
+
+.dialog-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+}

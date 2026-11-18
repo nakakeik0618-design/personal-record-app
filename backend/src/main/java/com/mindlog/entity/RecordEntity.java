@@ -69,6 +69,16 @@ public class RecordEntity {
 		this.updatedAt = now;
 	}
 
+	/**
+	 * 記録を更新する（FR-014）。モードは変更できない（画面レイアウト 10節 No.1）。
+	 * モード別の項目だけを変えた場合も更新日時を変えるため、@PreUpdate ではなくここで設定する。
+	 */
+	public void update(String title, LocalDate targetDate) {
+		this.title = title;
+		this.targetDate = targetDate;
+		this.updatedAt = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
+	}
+
 	public Long getId() {
 		return id;
 	}

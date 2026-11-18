@@ -4,8 +4,10 @@ import static org.hamcrest.Matchers.matchesPattern;
 import static org.hamcrest.Matchers.nullValue;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -25,7 +27,7 @@ import com.mindlog.repository.UserRepository;
 import com.mindlog.security.LoginUser;
 
 /**
- * 記録API（API-05〜API-08）のテスト。
+ * 記録API（API-05〜API-10）のテスト。
  * 各テストはトランザクション内で実行し、終了時にロールバックするため DB にデータは残らない。
  */
 @SpringBootTest
@@ -298,6 +300,125 @@ class RecordControllerTest {
 				.andExpect(status().isUnauthorized());
 		mockMvc.perform(get("/api/records/recent"))
 				.andExpect(status().isUnauthorized());
+	}
+
+	// ---- API-09 記録更新 ----
+
+	@Test
+	void 記録を更新でき_モードは変わらない() throws Exception {
+		Integer id = createId(owner, """
+				{"mode": "PROBLEM_SOLVING", "title": "元のタイトル", "targetDate": "2026-10-10",
+				 "details": {"goal": "元の目標", "cause": "元の原因"}}
+				""");
+
+		update(owner, id, """
+				{"mode": "DIARY", "title": "新しいタイトル", "targetDate": "2026-10-11",
+				 "details": {"goal": "新しい目標", "gap": "ギャップ"}}
+				""")
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.mode").value("PROBLEM_SOLVING"))
+				.andExpect(jsonPath("$.title").value("新しいタイトル"))
+				.andExpect(jsonPath("$.targetDate").value("2026-10-11"))
+				.andExpect(jsonPath("$.details.goal").value("新しい目標"))
+				.andExpect(jsonPath("$.details.gap").value("ギャップ"))
+				// 送らなかった項目は未入力になる
+				.andExpect(jsonPath("$.details.cause").value(nullValue()));
+
+		mockMvc.perform(get("/api/records/" + id).with(user(owner)))
+				.andExpect(jsonPath("$.mode").value("PROBLEM_SOLVING"))
+				.andExpect(jsonPath("$.title").value("新しいタイトル"))
+				.andExpect(jsonPath("$.details.goal").value("新しい目標"))
+				.andExpect(jsonPath("$.details.cause").value(nullValue()));
+	}
+
+	@Test
+	void タイトルを空にすると未入力になる() throws Exception {
+		Integer id = createId(owner, diaryJson("題", "本文"));
+
+		update(owner, id, """
+				{"title": "", "targetDate": "2026-10-10", "details": {"memo": "本文"}}
+				""")
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.title").value(nullValue()));
+	}
+
+	@Test
+	void 更新でも入力チェックを行う() throws Exception {
+		Integer id = createId(owner, diaryJson("題", "本文"));
+
+		update(owner, id, """
+				{"title": "%s", "details": {"goal": "x"}}
+				""".formatted("あ".repeat(31)))
+				.andExpect(status().isBadRequest())
+				.andExpect(jsonPath("$.errors[?(@.field == 'targetDate')]").exists())
+				.andExpect(jsonPath("$.errors[?(@.field == 'title')]").exists())
+				.andExpect(jsonPath("$.errors[?(@.field == 'details.goal')]").exists());
+	}
+
+	@Test
+	void 他ユーザーや存在しない記録は更新できない() throws Exception {
+		Integer id = createId(owner, diaryJson("題", "本文"));
+
+		update(other, id, diaryJson("乗っ取り", "本文"))
+				.andExpect(status().isNotFound());
+		update(owner, 999999999, diaryJson("題", "本文"))
+				.andExpect(status().isNotFound());
+
+		mockMvc.perform(get("/api/records/" + id).with(user(owner)))
+				.andExpect(jsonPath("$.title").value("題"));
+	}
+
+	// ---- API-10 記録削除 ----
+
+	@Test
+	void 記録を削除すると取得できなくなる() throws Exception {
+		Integer id = createId(owner, diaryJson("題", "本文"));
+
+		mockMvc.perform(delete("/api/records/" + id).with(user(owner)).with(csrf()))
+				.andExpect(status().isNoContent());
+
+		mockMvc.perform(get("/api/records/" + id).with(user(owner)))
+				.andExpect(status().isNotFound());
+		mockMvc.perform(get("/api/records").with(user(owner)))
+				.andExpect(jsonPath("$.length()").value(0));
+	}
+
+	@Test
+	void 他ユーザーや存在しない記録は削除できない() throws Exception {
+		Integer id = createId(owner, diaryJson("題", "本文"));
+
+		mockMvc.perform(delete("/api/records/" + id).with(user(other)).with(csrf()))
+				.andExpect(status().isNotFound());
+		mockMvc.perform(delete("/api/records/999999999").with(user(owner)).with(csrf()))
+				.andExpect(status().isNotFound());
+
+		mockMvc.perform(get("/api/records/" + id).with(user(owner)))
+				.andExpect(status().isOk());
+	}
+
+	@Test
+	void CSRFトークンがないと更新も削除もできない() throws Exception {
+		Integer id = createId(owner, diaryJson("題", "本文"));
+
+		mockMvc.perform(put("/api/records/" + id).with(user(owner))
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(diaryJson("題", "本文")))
+				.andExpect(status().isForbidden());
+		mockMvc.perform(delete("/api/records/" + id).with(user(owner)))
+				.andExpect(status().isForbidden());
+	}
+
+	private Integer createId(LoginUser loginUser, String json) throws Exception {
+		String body = create(loginUser, json)
+				.andExpect(status().isCreated())
+				.andReturn().getResponse().getContentAsString();
+		return JsonPath.read(body, "$.id");
+	}
+
+	private ResultActions update(LoginUser loginUser, Integer id, String json) throws Exception {
+		return mockMvc.perform(put("/api/records/" + id).with(user(loginUser)).with(csrf())
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(json));
 	}
 
 	private void createRecord(LoginUser loginUser, String mode, String title, String targetDate) throws Exception {

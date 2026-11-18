@@ -69,3 +69,16 @@ export function searchRecords(conditions: SearchConditions): Promise<RecordSumma
   const query = params.toString()
   return apiFetch<RecordSummary[]>(query ? `/api/records?${query}` : '/api/records')
 }
+
+/** 記録更新の入力（API-08 の入力から mode を除いたもの） */
+export type UpdateRecordInput = Omit<CreateRecordInput, 'mode'>
+
+/** API-09 記録更新 */
+export function updateRecord(id: string, input: UpdateRecordInput): Promise<MindRecord> {
+  return apiFetch<MindRecord>(`/api/records/${encodeURIComponent(id)}`, { method: 'PUT', body: input })
+}
+
+/** API-10 記録削除（成功時は本文なし） */
+export function deleteRecord(id: string): Promise<void> {
+  return apiFetch<void>(`/api/records/${encodeURIComponent(id)}`, { method: 'DELETE' })
+}

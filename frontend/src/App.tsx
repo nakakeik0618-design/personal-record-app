@@ -7,12 +7,12 @@ import { LoginPage } from './pages/LoginPage'
 import { ModeSelectPage } from './pages/ModeSelectPage'
 import { RecordCreatePage } from './pages/RecordCreatePage'
 import { RecordDetailPage } from './pages/RecordDetailPage'
+import { RecordEditPage } from './pages/RecordEditPage'
 import { RecordListPage } from './pages/RecordListPage'
 import { RegisterPage } from './pages/RegisterPage'
 
 /**
  * 画面のURLと表示するコンポーネントの対応（API設計書 6節）。
- * 記録編集（/records/:id/edit）は、編集機能の実装時に追加する。
  */
 export default function App() {
   return (
@@ -30,6 +30,7 @@ export default function App() {
               <Route path="/records/new" element={<ModeSelectPage />} />
               <Route path="/records/new/:modeSlug" element={<RecordCreatePage />} />
               <Route path="/records/:id" element={<RecordDetailPage />} />
+              <Route path="/records/:id/edit" element={<RecordEditPage />} />
             </Route>
           </Route>
 
