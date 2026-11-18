@@ -17,7 +17,7 @@ type RecordFormProps = {
   onSubmit: (values: RecordFormValues) => Promise<void>
 }
 
-/** 記録の入力フォーム（SC-05。入力項目はモードごとに変わる） */
+/** 記録の入力フォーム（SC-05 作成、SC-08 編集。入力項目はモードごとに変わる） */
 export function RecordForm({ heading, mode, initialValues, cancelTo, onSubmit }: RecordFormProps) {
   const [title, setTitle] = useState(initialValues.title)
   const [targetDate, setTargetDate] = useState(initialValues.targetDate)

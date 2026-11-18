@@ -53,14 +53,42 @@ public class RecordService {
 	@Transactional
 	public RecordResponse create(Long userId, RecordRequest request) {
 		Map<String, String> requestDetails = request.details() == null ? Map.of() : request.details();
-		validate(request, requestDetails);
+		List<FieldErrorResponse> errors = new ArrayList<>();
+		if (request.mode() == null) {
+			errors.add(new FieldErrorResponse("mode", "モードを選択してください。"));
+		}
+		validate(request.mode(), request, requestDetails, errors);
 
 		RecordEntity record = recordRepository.saveAndFlush(new RecordEntity(userId, request.mode(),
 				blankToNull(request.title()), request.targetDate()));
+		return RecordResponse.from(record, saveDetails(record, toSavedValues(requestDetails)));
+	}
 
-		Map<String, String> details = new HashMap<>();
-		requestDetails.forEach((key, value) -> details.put(key, blankToNull(value)));
-		return RecordResponse.from(record, saveDetails(record, details));
+	/**
+	 * 記録を更新する（FR-013, FR-014）。リクエストの mode は無視し、記録のモードのまま更新する。
+	 * details に含まれない項目は未入力（null）になる。
+	 */
+	@Transactional
+	public RecordResponse update(Long userId, Long id, RecordRequest request) {
+		RecordEntity record = recordRepository.findByIdAndUserId(id, userId)
+				.orElseThrow(RecordNotFoundException::new);
+		Map<String, String> requestDetails = request.details() == null ? Map.of() : request.details();
+		validate(record.getMode(), request, requestDetails, new ArrayList<>());
+
+		record.update(blankToNull(request.title()), request.targetDate());
+		// saveAndFlush：更新を DB にすぐ反映する（トランザクションの終わりを待たない）
+		recordRepository.saveAndFlush(record);
+		return RecordResponse.from(record, saveDetails(record, toSavedValues(requestDetails)));
+	}
+
+	/**
+	 * 記録を削除する（FR-015）。モード別テーブルの行は、外部キーの ON DELETE CASCADE で一緒に削除される。
+	 */
+	@Transactional
+	public void delete(Long userId, Long id) {
+		RecordEntity record = recordRepository.findByIdAndUserId(id, userId)
+				.orElseThrow(RecordNotFoundException::new);
+		recordRepository.delete(record);
 	}
 
 	/**
@@ -107,20 +135,22 @@ public class RecordService {
 				.toList();
 	}
 
-	private void validate(RecordRequest request, Map<String, String> details) {
-		List<FieldErrorResponse> errors = new ArrayList<>();
-		if (request.mode() == null) {
-			errors.add(new FieldErrorResponse("mode", "モードを選択してください。"));
-		}
+	/**
+	 * 入力内容をチェックし、エラーがあれば InputValidationException を投げる。
+	 * mode は入力項目の確認に使うモード（作成時はリクエストの値、更新時は記録のモード）。
+	 * errors には、呼び出し元で見つけたエラーを入れて渡す。
+	 */
+	private void validate(RecordMode mode, RecordRequest request, Map<String, String> details,
+			List<FieldErrorResponse> errors) {
 		if (request.targetDate() == null) {
 			errors.add(new FieldErrorResponse("targetDate", "対象日を入力してください。"));
 		}
 		if (length(request.title()) > TITLE_MAX_LENGTH) {
 			errors.add(new FieldErrorResponse("title", "タイトルは30文字以内で入力してください。"));
 		}
-		if (request.mode() != null) {
+		if (mode != null) {
 			details.forEach((key, value) -> {
-				if (!request.mode().getDetailKeys().contains(key)) {
+				if (!mode.getDetailKeys().contains(key)) {
 					errors.add(new FieldErrorResponse("details." + key, "このモードでは入力できない項目です。"));
 				} else if (length(value) > DETAIL_MAX_LENGTH) {
 					errors.add(new FieldErrorResponse("details." + key, "5,000文字以内で入力してください。"));
@@ -132,6 +162,14 @@ public class RecordService {
 		}
 	}
 
+	/** 保存する値に変換する（未入力は null） */
+	private static Map<String, String> toSavedValues(Map<String, String> requestDetails) {
+		Map<String, String> values = new HashMap<>();
+		requestDetails.forEach((key, value) -> values.put(key, blankToNull(value)));
+		return values;
+	}
+
+	/** モード別テーブルに保存する。すでに行がある場合（更新時）は上書きする */
 	private Map<String, String> saveDetails(RecordEntity record, Map<String, String> values) {
 		Long id = record.getId();
 		return switch (record.getMode()) {

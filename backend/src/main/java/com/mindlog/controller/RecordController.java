@@ -7,9 +7,11 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.format.annotation.DateTimeFormat.ISO;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -67,5 +69,19 @@ public class RecordController {
 	@ResponseStatus(HttpStatus.CREATED)
 	public RecordResponse create(@AuthenticationPrincipal LoginUser loginUser, @RequestBody RecordRequest request) {
 		return recordService.create(loginUser.getId(), request);
+	}
+
+	/** API-09 記録更新 */
+	@PutMapping("/{id}")
+	public RecordResponse update(@AuthenticationPrincipal LoginUser loginUser, @PathVariable Long id,
+			@RequestBody RecordRequest request) {
+		return recordService.update(loginUser.getId(), id, request);
+	}
+
+	/** API-10 記録削除。成功時は本文なしの 204 を返す */
+	@DeleteMapping("/{id}")
+	@ResponseStatus(HttpStatus.NO_CONTENT)
+	public void delete(@AuthenticationPrincipal LoginUser loginUser, @PathVariable Long id) {
+		recordService.delete(loginUser.getId(), id);
 	}
 }
