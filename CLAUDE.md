@@ -12,13 +12,14 @@
 - 基本設計書: `docs/basic-design/`（画面遷移図 `screen-transition.md`（画面ID: SC-xx）、ER図 `er-diagram.md`、画面レイアウト `screen-layout.md`）
 - 詳細設計書: `docs/detailed-design/`（API設計 `api-design.md`（API ID: API-xx）、DB設計 `db-design.md`）
 - プロジェクト概要: `docs/README.md`
+- 一時公開（友人テスト用）の手順: `docs/public-testing.md`（Cloudflare Tunnel、HTTPS）
 
 ## 技術スタック（確定）
 
 | 領域 | 技術 |
 |---|---|
 | バックエンド | Java 25, Spring Boot 4.1.1, Spring Security, Spring Data JPA, Validation, Flyway（Lombokは使わない） |
-| DB | MySQL 8.4（Docker で起動、ポート 3307） |
+| DB | MySQL 8.4（Docker で起動、ポート 3307。PC内からのみ接続可） |
 | フロントエンド | HTML, CSS, TypeScript, React |
 | ビルドツール | Maven（Maven Wrapper `./mvnw`） |
 | バージョン管理 | GitHub |
